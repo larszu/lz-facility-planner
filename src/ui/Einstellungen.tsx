@@ -19,22 +19,13 @@
 //   Über      Name und Version. Die Version kommt aus `__APP_VERSION__`
 //             (Vite-Define) und steht nirgends im Quelltext ein zweites Mal.
 //
-// Der Dialog ist eine FLÄCHE und keine Karte: kein Radius, kein Schatten,
-// Kopflinie oben, Aktionen unten rechts (ADR-007 Abschnitt 6).
+// Seit 2026-10-13 (ADR-007, geändert): der Dialog ist ein schwebendes Blatt
+// mit Rundung und Schatten, ohne Kopflinie; Aktionen unten rechts.
 // ───────────────────────────────────────────────────────────────────────────
-import { useEffect, useState } from 'react'
-import { liesThema, setzeThema, type Thema } from '../lib/thema'
+import { useEffect } from 'react'
 import { useT, type Sprache } from '../i18n'
-import hauptlogoNavy from '../assets/brand/lzm_hauptlogo_navy.svg'
-import hauptlogoOffwhite from '../assets/brand/lzm_hauptlogo_offwhite.svg'
-
-type UebersetzFn = (key: string, en: string) => string
-
-const themaWahl = (t: UebersetzFn): { id: Thema; titel: string; hinweis: string }[] => [
-  { id: 'system', titel: t('settings.theme.system', 'Follow the system'), hinweis: t('settings.theme.system.hint', 'Takes whatever the operating system says.') },
-  { id: 'dunkel', titel: t('settings.theme.dark', 'Dark'), hinweis: t('settings.theme.dark.hint', 'Always dark, regardless of the system.') },
-  { id: 'hell', titel: t('settings.theme.light', 'Light'), hinweis: t('settings.theme.light.hint', 'Always light, regardless of the system.') },
-]
+import { ThemaUmschalter } from './ThemaUmschalter'
+import hauptlogo from '../assets/brand/lzm_hauptlogo_navy.svg'
 
 /** Die Sprachen stehen in IHRER EIGENEN Sprache — „Deutsch", nicht „German".
  *  Wer die Oberfläche gerade nicht versteht, sucht sein eigenes Wort. */
@@ -45,8 +36,6 @@ const SPRACHEN: { id: Sprache; titel: string }[] = [
 
 export function Einstellungen({ onClose }: { onClose: () => void }) {
   const { t, sprache, setzeSprache } = useT()
-  const [thema, setThema] = useState<Thema>(liesThema)
-  const WAHL = themaWahl(t)
 
   useEffect(() => {
     const esc = (e: KeyboardEvent) => {
@@ -90,30 +79,21 @@ export function Einstellungen({ onClose }: { onClose: () => void }) {
           </section>
           <section>
             <h3>{t('settings.theme', 'Theme')}</h3>
-            {WAHL.map((w) => (
-              <label key={w.id} className="wahl">
-                <input
-                  type="radio"
-                  name="thema"
-                  checked={thema === w.id}
-                  onChange={() => {
-                    setThema(w.id)
-                    setzeThema(w.id)
-                  }}
-                />
-                <span>
-                  {w.titel}
-                  <em>{w.hinweis}</em>
-                </span>
-              </label>
-            ))}
+            <p className="leise">
+              {t('settings.theme.hint', 'Follow the system, always light or always dark. The choice is kept on this device.')}
+            </p>
+            <ThemaUmschalter />
           </section>
           <section>
             <h3>{t('settings.about', 'About')}</h3>
-            <span className="ueber-logo" role="img" aria-label="Lars Zumpe Medienproduktion">
-              <img src={hauptlogoOffwhite} alt="" className="nur-dunkel" />
-              <img src={hauptlogoNavy} alt="" className="nur-hell" />
-            </span>
+            {/* Das Hauptlogo als Maske, gefuellt mit `--logo`: so steht es
+                in den Kit-Farben beider Themen, ohne zwei Bilder. */}
+            <span
+              className="ueber-logo"
+              role="img"
+              aria-label="Lars Zumpe Medienproduktion"
+              style={{ maskImage: `url(${hauptlogo})`, WebkitMaskImage: `url(${hauptlogo})` }}
+            />
             <p>LZ Facility Planner</p>
             <p className="leise">{t('settings.about.version', 'Version')} {__APP_VERSION__}</p>
             <p className="leise">Lars Zumpe Medienproduktion</p>

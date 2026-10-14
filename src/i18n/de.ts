@@ -346,13 +346,11 @@ export const de: Record<string, string> = {
   'settings.language': 'Sprache',
   'settings.language.hint':
     'Englisch ist die Quellsprache, Deutsch eine Übersetzung. Fehlt ein Eintrag, erscheint der englische Text.',
-  'settings.theme': 'Thema',
+  'settings.theme': 'Darstellung',
   'settings.theme.dark': 'Dunkel',
-  'settings.theme.dark.hint': 'Immer dunkel, unabhängig vom System.',
+  'settings.theme.hint': 'Dem System folgen, immer hell oder immer dunkel. Die Wahl bleibt auf diesem Gerät.',
   'settings.theme.light': 'Hell',
-  'settings.theme.light.hint': 'Immer hell, unabhängig vom System.',
   'settings.theme.system': 'Dem System folgen',
-  'settings.theme.system.hint': 'Übernimmt, was das Betriebssystem sagt.',
   'settings.title': 'Einstellungen',
 
   // ── Schaltstellen ──

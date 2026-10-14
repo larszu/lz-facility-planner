@@ -1,0 +1,102 @@
+/* ───────────────────────────────────────────────────────────────────────────
+ * DIE TOKEN-DATEI — die einzige Stelle mit rohen Farbwerten.
+ *
+ * WARUM ES DAS GIBT (umgestellt 2026-10-13, ADR-007 in lz-planner-suite
+ * geändert): Bis hierher war dieses Repo Deep Navy, eckig, ohne Schatten —
+ * die Print-Regeln des Brand Guide auf eine Oberfläche übertragen. Der
+ * Eigentümer will es modern: neutrale Flächen, Markenblau nur als Akzent,
+ * IMMER hell und dunkel mit sichtbarem Umschalter, Dunkel = Anthrazit.
+ * Dieselben Werte stehen im cable-planner (Referenz) und allen Plannern der
+ * Suite; `markenPalette.node.test.ts` misst sie hier nach.
+ *
+ * WIE DIE MODI SCHALTEN. Jede Farbe ist `light-dark(hell, dunkel)`; welcher
+ * Wert gilt, entscheidet `color-scheme` am Wurzelknoten:
+ *   ohne `data-thema`         → `light dark`, also das Betriebssystem
+ *   `data-thema="hell"`       → `light`
+ *   `data-thema="dunkel"`     → `dark`
+ * Damit steht jeder Wert genau EINMAL hier — kein zweiter Block für
+ * `prefers-color-scheme`, der beim nächsten Umbau vergessen wird.
+ *
+ * `--signal` ist Tally-Rot und steht genau einmal: Fokusring, Signet-Punkt,
+ * laufender Vorgang. Nie Fläche, nie Text, nie Rahmen. Die Meldefarben
+ * daneben sind ausdrücklich NICHT dasselbe.
+ *
+ * `--logo` hängt NICHT an `--akzent`: das Logo steht nur in den Kit-Farben
+ * (Navy auf Hell, Off-White auf Dunkel), auch wenn der Akzent im Dunkeln ein
+ * helles Blau ist.
+ * ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  color-scheme: light dark;
+
+  /* Flächen */
+  --bg: light-dark(#FAFAF8, #1E1F23);              /* Grund */
+  --flaeche: light-dark(#FFFFFF, #28292E);         /* Panels, Karten */
+  --flaeche-2: light-dark(#F1F1EE, #33343A);       /* Felder, Werkzeugleisten, Hover */
+  --erhoben: light-dark(#FFFFFF, #3B3C42);         /* Menüs, Popover, Dialog */
+  --versenkt: light-dark(#F4F4F1, #19191D);        /* Plan- und Zeichengrund */
+
+  /* Text */
+  --text-stark: light-dark(#16181D, #F6F5F0);
+  --text: light-dark(#2B2E35, #E6E6E3);
+  --leise: light-dark(#6A6E77, #A9ACB4);
+
+  /* Linien */
+  --rand: light-dark(rgba(22, 24, 29, 0.08), rgba(246, 245, 240, 0.09));
+  --rand-stark: light-dark(rgba(22, 24, 29, 0.18), rgba(246, 245, 240, 0.2));
+
+  /* Akzent = Markenblau: Hauptknopf, Auswahl, Fortschritt, Links. ≤ 10 % Fläche. */
+  --akzent: light-dark(#1D324F, #B9C7D8);
+  --akzent-text: light-dark(#F6F5F0, #132040);
+  --akzent-weich: light-dark(color-mix(in oklab, var(--akzent) 10%, transparent), color-mix(in oklab, var(--akzent) 12%, transparent));
+
+  /* Logo — nur Kit-Farben */
+  --logo: light-dark(#1D324F, #F6F5F0);
+
+  /* Signal — genau einmal */
+  --signal: #D6402E;
+
+  /* Status */
+  --ok: #2F7D5C;
+  --warn: #C8892B;
+  --gefahr: #B04A3F;
+  /* Bernstein als SCHRIFT erreicht auf Weiss nur 2,9:1 — als Text im hellen
+   * Modus abgedunkelt, damit Warnsaetze WCAG AA halten. */
+  --warn-text: light-dark(color-mix(in oklab, var(--warn), #000 32%), var(--warn));
+  --warn-weich: color-mix(in oklab, var(--warn) 14%, transparent);
+  --gefahr-weich: color-mix(in oklab, var(--gefahr) 14%, transparent);
+
+  /* Schein (nur Leerflächen) und Schleier */
+  --schein-1: light-dark(rgba(29, 50, 79, 0.1), rgba(185, 199, 216, 0.16));
+  --schein-2: rgba(200, 137, 43, 0.1);
+  --schleier: light-dark(rgba(22, 24, 29, 0.32), rgba(0, 0, 0, 0.55));
+  --glas: color-mix(in oklab, var(--bg) 72%, transparent);
+  --zustand: var(--text-stark);
+
+  /* Formen */
+  --r-s: 6px;
+  --r-m: 10px;
+  --r-l: 20px;
+  --r-xl: 24px;
+  --r-voll: 999px;
+
+  /* Tiefe — nur zum Trennen von Ebenen */
+  --schatten-1: 0 1px 2px light-dark(rgba(22, 24, 29, 0.06), rgba(0, 0, 0, 0.3));
+  --schatten-2: 0 4px 16px light-dark(rgba(22, 24, 29, 0.08), rgba(0, 0, 0, 0.4));
+  --schatten-3: 0 16px 48px light-dark(rgba(22, 24, 29, 0.14), rgba(0, 0, 0, 0.55));
+  --schatten-akzent: 0 6px 18px -6px color-mix(in oklab, var(--akzent) 55%, transparent);
+
+  /* Bewegung */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dauer-1: 120ms;
+  --dauer-2: 220ms;
+  --dauer-3: 360ms;
+
+  --schrift: 'Public Sans Variable', 'Public Sans', system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+:root[data-thema='hell'] { color-scheme: light; }
+:root[data-thema='dunkel'] { color-scheme: dark; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dauer-1: 0ms; --dauer-2: 0ms; --dauer-3: 120ms; }
+}
