@@ -711,7 +711,7 @@ tbody tr:hover td { background: color-mix(in oklab, var(--zustand) 4%, transpare
 td input.schmal,
 td select.schmal { width: 7ch; }
 
-td input[type='number'] { width: 8ch; text-align: right; }
+td input[type='number'] { width: calc(6ch + 2 * var(--steg-3)); text-align: right; }
 td select { max-width: 100%; }
 
 /* ── Liste als Karten unter 700 px ───────────────────────────────────────

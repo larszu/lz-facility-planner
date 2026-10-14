@@ -5,6 +5,14 @@
 > return path for defects. Offline-first Electron desktop app, part of the
 > [LZ Planner Suite](https://github.com/larszu/lz-planner-suite).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/bilder/hauptansicht-dunkel.png">
+  <img src="docs/bilder/hauptansicht-hell.png" alt="LZ Facility Planner: Anschlusspunkte eines Beispielgebäudes" width="100%">
+</picture>
+
+Hell und dunkel: [hell](docs/bilder/hauptansicht-hell.png) · [dunkel](docs/bilder/hauptansicht-dunkel.png)
+— neu aufnehmen mit `npm run bilder` (Beispieldaten, `scripts/readme-bilder.mjs`).
+
 Das **Gebäude** als eigenes Werkzeug: Anschlusspunkte, Verteilung und Kreise,
 die benannten Klinken der Haussteuerung — und der eine Rückweg für Mängel.
 
@@ -155,6 +163,7 @@ npm run build   # tsc -b && vite build
 npm run lint
 npm test        # vitest + Grenze zum Show-Plan + Quellsprache
 npm run ci:complete    # jeder *:check wird auch wirklich gefahren
+npm run bilder         # README-Bilder hell + dunkel neu (Chrome oder CHROME=<Pfad>)
 
 npm run electron:dev   # Desktop-Fassung lokal starten (baut vorher)
 npm run dist:win       # Windows: Setup + Portable nach release/
