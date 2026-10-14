@@ -35,7 +35,8 @@
     "test": "vitest run && npm run grenze:check && npm run lang:check",
     "lang:check": "node --experimental-strip-types scripts/quellsprache-check.ts",
     "grenze:check": "node --experimental-strip-types scripts/plan-grenze-check.ts",
-    "ci:complete": "node scripts/ci-runs-every-check.mjs"
+    "ci:complete": "node scripts/ci-runs-every-check.mjs",
+    "bilder": "node scripts/readme-bilder.mjs"
   },
   "dependencies": {
     "@fontsource-variable/public-sans": "^5.3.0",
@@ -56,6 +57,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "playwright-core": "^1.61.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.62.0",
     "vite": "^8.1.0",
