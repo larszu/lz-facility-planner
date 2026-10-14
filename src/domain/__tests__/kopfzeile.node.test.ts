@@ -37,6 +37,15 @@ import { resolve } from 'node:path'
 // Menü, dessen Übersetzung fehlt, steht auf Deutsch plötzlich englisch da,
 // und das fällt sonst erst dem Nutzer auf.
 //
+// ─── SEIT DEM 2026-10-13: NUR DIE OPTIK IST NEU ───────────────────────────
+//
+// ADR-007 (lz-planner-suite) wurde geaendert: Glas-Kopfzeile, Pill-Knoepfe,
+// Dialoge als schwebende Blaetter, keine Kopflinie mehr an Dialogen. Die
+// Struktur-Zusicherungen unten bleiben unveraendert — 40 px, Menues links,
+// Einstellungen rechts aussen. Neu: der Umschalter Auto · Hell · Dunkel
+// steht in der rechten Gruppe VOR den Einstellungen, und die rote Kopflinie
+// am Dialog kommt nicht zurueck.
+//
 // ─── WAS ER NICHT KANN ────────────────────────────────────────────────────
 //
 // Er liest Quelltext. Ob der Knopf im Fenster wirklich rechts aussen sitzt,
@@ -69,6 +78,28 @@ describe('die Kopfzeile hat das Mass der Suite', () => {
     const j = kopf.indexOf("title={t('settings.title'")
     expect(i, 'keine rechte Gruppe im Markup').toBeGreaterThan(0)
     expect(j, 'kein Einstellungen-Knopf').toBeGreaterThan(i)
+  })
+})
+
+describe('die Optik seit 2026-10-13', () => {
+  it('die Kopfzeile ist Glas und klebt oben', () => {
+    const block = css.slice(css.indexOf('.kopf {'), css.indexOf('.kopf {') + 500)
+    expect(block).toContain('position: sticky')
+    expect(block).toContain('backdrop-filter: blur(16px) saturate(1.4)')
+    expect(block).toContain('background: var(--glas)')
+  })
+
+  it('der Umschalter steht rechts, aber vor den Einstellungen', () => {
+    const r = kopf.indexOf('kopf-rechts')
+    const u = kopf.indexOf('<ThemaUmschalter />')
+    const e = kopf.indexOf("title={t('settings.title'")
+    expect(u).toBeGreaterThan(r)
+    expect(e, 'Einstellungen sind nicht mehr der letzte Punkt').toBeGreaterThan(u)
+  })
+
+  it('keine Kopflinie am Dialog', () => {
+    const block = css.slice(css.indexOf('.dialog-kopf {'), css.indexOf('.dialog-kopf {') + 300)
+    expect(block).not.toContain('border-bottom')
   })
 })
 

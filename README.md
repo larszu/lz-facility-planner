@@ -207,9 +207,28 @@ Aufnahme nach dem Update nicht verschwindet.
 **Icon und Logo.** App-Icon in `build/` (`icon.svg` ist die Vorlage, daneben
 `icon.png` und `icon.ico` für electron-builder), Favicon und Apple-Touch-Icon in
 `public/`. Die Logos der Lars Zumpe Medienproduktion liegen als Originalkontur
-in `src/assets/brand/`: das Signet „lz." steht links in der Kopfzeile — ohne
-Tally-Punkt, weil die Primärknöpfe im selben Sichtfeld schon den roten Punkt
-tragen —, das Hauptlogo unter *Einstellungen → About*.
+in `src/assets/brand/`: das Signet „lz." mit Tally-Punkt steht links in der
+Kopfzeile, das Hauptlogo unter *Einstellungen → About*. Beide stehen nur in
+den Kit-Farben (Navy auf Hell, Off-White auf Dunkel, Punkt immer Tally-Rot)
+und folgen dem Thema über das Token `--logo`.
+
+## Oberfläche
+
+Hell und dunkel, umschaltbar über das Segment **Auto · Hell · Dunkel** rechts
+in der Kopfzeile (dasselbe unter *Einstellungen → Theme*). *Auto* folgt dem
+Betriebssystem; die Wahl bleibt auf diesem Gerät gespeichert und wandert nicht
+in die `.avfacility`-Datei. Dunkel ist Anthrazit, nicht Navy.
+
+Flächen sind neutral, Markenblau ist nur Akzent: die eine Hauptaktion (Pill),
+der gewählte Reiter, Auswahl. Kopfzeile aus Glas, Blöcke, Tabellen und
+Kacheln als Karten, Dialoge als schwebende Blätter, Grundriss und
+Gebäude-Ansicht auf einem eigenen, themenabhängigen Plangrund. Schrift ist
+Public Sans, lokal ausgeliefert (`@fontsource-variable/public-sans`).
+
+Alle Farben, Rundungen und Schatten stehen als Tokens in `src/tokens.css`
+(dieselben Werte wie im cable-planner, ADR-007 der Suite);
+`markenPalette.node.test.ts` misst die Werte in beiden Modi und dass
+`src/index.css` nichts an ihnen vorbei setzt.
 
 **Keine gekaufte Signatur.** Die macOS-Pakete tragen eine Ad-hoc-Signatur, die
 Windows-Installer gar keine. Beim ersten Start meldet sich der jeweilige

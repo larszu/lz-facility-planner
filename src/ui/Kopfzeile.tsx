@@ -37,8 +37,8 @@ import { useRef, useState } from 'react'
 import { useT } from '../i18n'
 import { Menue, MenuePunkt, MenueTrenner } from './Menue'
 import { Einstellungen } from './Einstellungen'
-import signetNavy from '../assets/brand/lzm_signet_navy.svg'
-import signetOffwhite from '../assets/brand/lzm_signet_offwhite.svg'
+import { Signet } from './Signet'
+import { ThemaUmschalter } from './ThemaUmschalter'
 
 interface Props {
   /** Der Gebäudename — er steht links wie der App-Name im Cable Planner. */
@@ -61,11 +61,10 @@ export function Kopfzeile({ name, onNeu, onSichern, onLaden }: Props) {
   return (
     <>
       <header className="kopf">
-        {/* Signet ohne Tally-Punkt: die Primaerknoepfe tragen im selben
-            Sichtfeld schon den roten Punkt, und es gibt nur einen pro Flaeche. */}
+        {/* Signet in Kit-Farben (`--logo`), Punkt Tally-Rot. Seit 2026-10-13
+            tragen die Primaerknoepfe keinen Punkt mehr — er steht nur hier. */}
         <span className="kopf-signet" role="img" aria-label="Lars Zumpe Medienproduktion">
-          <img src={signetOffwhite} alt="" className="nur-dunkel" />
-          <img src={signetNavy} alt="" className="nur-hell" />
+          <Signet />
         </span>
         <span className="marke">{name || t('building.default', 'Building')}</span>
 
@@ -126,13 +125,18 @@ export function Kopfzeile({ name, onNeu, onSichern, onLaden }: Props) {
         {/* Rechts aussen, als LETZTER Bedienpunkt der Zeile — dieselbe Stelle
             wie im Cable Planner. */}
         <div className="kopf-rechts">
+          <ThemaUmschalter />
           <button
             type="button"
             className="kopf-knopf"
+            aria-label={t('settings.title', 'Settings')}
             onClick={() => setEinstellungenOffen(true)}
             title={t('settings.title', 'Settings')}
           >
-            <span aria-hidden="true">⚙</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+            </svg>
             <span className="nur-breit">{t('settings.title', 'Settings')}</span>
           </button>
         </div>

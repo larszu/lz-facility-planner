@@ -1,59 +1,29 @@
-/* ADR-007 (av-planner-suite) — die Marken-Palette der Suite, Stufe 6.
+/* ADR-007 (lz-planner-suite, geändert 2026-10-13) — die Oberfläche der Suite.
  *
- * HIER STAND: „Die Marken-Palette der Suite (ADR-007) zieht mit dem Einbetten
- * nach; bis dahin ist eine lesbare Tabelle mehr wert als ein Thema, das gleich
- * wieder ersetzt wird." Das war 2026-09-09 richtig — dieses Repo war einen Tag
- * alt. Eingebettet ist es seit dem Vendoring, und damit ist „bis dahin"
- * vorbei: gemessen am 2026-09-11 trugen die acht Repos aus dem
- * ADR-Geltungsbereich alle `#1D324F`, dieses hier keines davon. Ein Planer,
- * der neben den anderen in derselben Schale steht und anders aussieht, ist
- * genau das, wogegen die Regeln geschrieben wurden.
+ * Farben, Rundungen, Schatten und Bewegung kommen AUSSCHLIESSLICH aus
+ * `tokens.css`. In diesem Stilblatt steht kein rohes Hex, kein rgba und kein
+ * Radius in px — `markenPalette.node.test.ts` misst das.
  *
- * DIE REGELNAMEN BLEIBEN UNVERAENDERT. Umgestellt sind die Werte, nicht die
- * Struktur — dieselbe Form wie bei `pi-media-station` und `tally-pi`. Werte und
- * Rollen: `@avplan/ui`, `src/brand.ts` (aus dem Brand Guide 2.0).
+ * DIE REGELNAMEN BLEIBEN UNVERAENDERT. Umgestellt ist die Optik, nicht die
+ * Struktur: Kopfzeile 40 px, Menüs links, Einstellungen rechts aussen,
+ * Reiter darunter, Statusleiste unten (ADR-007 Abschnitt 6).
  *
- * `--signal` ist Tally-Rot und steht hier bewusst allein: es ist das
- * Aufnahmelicht, nie Flaeche, nie Text, nie zweimal in einem Sichtfeld. Die
- * Status-Toene daneben (`--warn`, `--gefahr`, `--ok`) sind die Meldefarben des
- * Handbuchs und ausdruecklich NICHT dasselbe — wer eine Warnung in Tally-Rot
- * setzt, nimmt dem Signal seine Bedeutung.
- *
- * Keine Rundungen, keine Schatten, keine Verlaeufe (Guide S. 10). */
+ * WAS ENTFAELLT (2026-10-13): Radius 0 und Schatten „none" als Pflicht, die
+ * Kopflinie (Kicker in Versalien + Linie) je Block und Dialog, Navy-Flächen,
+ * 2-px-Outline-Knöpfe, der rote Punkt am Primärknopf. */
+@import './tokens.css';
+@import '@fontsource-variable/public-sans';
+
 :root {
-  color-scheme: dark;
-  --bg: #132040;                        /* Deep Navy — Grund */
-  --flaeche: #1D324F;                   /* Zumpe Navy — Karten, Tabellenkopf */
-  --erhoben: #24405F;                   /* ueber der Flaeche: Chip, Knopf, Hover */
-  --rand: rgba(246, 245, 240, 0.14);    /* Linie auf Dunkel (Guide S. 17) */
-  --text: #E1ECEF;                      /* Eisblau — Fliesstext auf Dunkel */
-  --leise: #8C9CB3;                     /* Stahlblau — Meta, nie Fliesstext */
-  --warn: #C8892B;                      /* Status: Warnung */
-  --gefahr: #B04A3F;                    /* Status: Fehler */
-  --ok: #2F7D5C;                        /* Status: Erfolg */
-  --signal: #D6402E;                    /* Tally-Rot — Fokusring, laufender Vorgang */
-  --logo-auf-dunkel: block;             /* Logo Off-White auf Navy, Navy auf Hell */
-  --logo-auf-hell: none;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--schrift);
   font-size: 14px;
 
   /* ── Das Bedien-Grundmass (suite#231) ────────────────────────────────
    *
-   * `--ziel` ist die Mindesthoehe eines Bedienpunkts. 32 px und nicht die
-   * 24, die vorher einzeln an den Dialogen standen: 24 px ist die UNTERE
-   * Schranke aus WCAG 2.2 SC 2.5.8 („Target Size (Minimum)"), 44 px die
-   * Empfehlung aus SC 2.5.5. Wer ein Gebaeude begeht, traegt ein Tablet und
-   * eine Taschenlampe; dort ist die Empfehlung naeher an der Wahrheit als
-   * die Schranke. 32 liegt auf dem 8-px-Raster und ist dieselbe Zahl, mit
-   * der in ADR-007 eine eingeklappte Spalte stehenbleibt.
-   *
-   * Gemessen VOR dieser Aenderung, im Browser auf 1440 px: 13 Bedienpunkte
-   * unter 32 px. `ui:check` misst es nach.
-   *
-   * Dieselben Werte stehen im `inventory-planner`. Das ist keine Doppelung
-   * aus Bequemlichkeit: beide Repos laufen auch ALLEIN und koennen kein
-   * gemeinsames Paket laden — dieselbe Lage wie bei den 40 px der Kopfzeile,
-   * die `chrome-parity.mjs` in der Suite deshalb je Repo nachmisst. */
+   * `--ziel` ist die Mindesthoehe eines Bedienpunkts: 32 px auf dem 8-px-
+   * Raster, zwischen der WCAG-Schranke (24, SC 2.5.8) und der Empfehlung
+   * (44, SC 2.5.5). Auf Touch gilt die Empfehlung (unten). Dieselben Werte
+   * stehen im `inventory-planner`; beide Repos laufen auch ALLEIN. */
   --ziel: 32px;
   --steg-1: 4px;
   --steg-2: 8px;
@@ -63,9 +33,10 @@
   --steg-6: 32px;
 }
 
-/* `border-box` fehlte in diesem Stilblatt ganz. Als `*`-Regel und nicht an
- * den betroffenen Stellen: die naechste Klasse mit Polsterung und Breite
- * entstuende sonst mit demselben Fehler. */
+@media (pointer: coarse) {
+  :root { --ziel: 44px; }
+}
+
 *,
 *::before,
 *::after {
@@ -76,20 +47,16 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  /* Waagerecht wird in dieser App nie die SEITE geschoben, sondern immer nur
-     ein Bereich, der es ausdruecklich darf (`.tabelle-rahmen`,
-     `.reiter-leiste`). Das ist die Zusage, die `ui:check` misst. */
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  /* Waagerecht wird nie die SEITE geschoben, nur ein Bereich, der es
+     ausdruecklich darf (`.tabelle-rahmen`, `.reiter-leiste`). */
   overflow-x: hidden;
 }
 
-/* Die App ist eine SPALTE ueber die volle Fensterhoehe und kein zentriertes
- * Blatt mehr (suite#231) — Kopfzeile oben, Reiter darunter, Arbeitsflaeche
- * dazwischen, Statusleiste unten (ADR-007 Abschnitt 6). Nur der INHALT
- * bekommt seine Satzbreite.
- *
- * `100dvh` und nicht `100vh`: auf dem Telefon ist die Adresszeile mal da und
- * mal weg, und `vh` rechnet immer mit dem grossen Zustand — die Statusleiste
- * laege dann unter dem Bildschirmrand. */
+h1, h2, h3 { color: var(--text-stark); }
+
+/* `100dvh` und nicht `100vh`: auf dem Telefon kommt und geht die Adresszeile. */
 .app {
   min-height: 100dvh;
   display: flex;
@@ -101,70 +68,70 @@ body {
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
-  padding: var(--steg-3) var(--steg-4) var(--steg-6);
+  padding: var(--steg-4) var(--steg-4) var(--steg-6);
   min-width: 0;
 }
 
 @media (max-width: 700px) {
   .inhalt {
-    padding: var(--steg-2) var(--steg-2) var(--steg-5);
+    padding: var(--steg-3) var(--steg-3) var(--steg-5);
   }
-}
-
-/* ── Die Datei-Knoepfe im Kopf (Issue #2) ───────────────────────────────
-   Ein Datei-Feld sieht nirgends aus wie ein Knopf: das Label IST der Knopf,
-   das Feld darin bleibt unsichtbar. */
-.kopf .datei {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-left: auto;
-}
-.kopf .datei-knopf {
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-}
-.kopf .datei-knopf input[type='file'] {
-  display: none;
 }
 
 /* ── Kopfzeile, Menue, Einstellungen ─────────────────────────────────────
  *
  * ADR-007 Abschnitt 6: 40 px hoch, Menues links, Einstellungen rechts aussen.
- * Dieselben Zahlen wie `.cp-topbar` im Cable Planner und `.av-topbar` in
- * `@avplan/ui` — dieses Repo laeuft auch ALLEIN und kann das Paket nicht
- * laden, deshalb steht die Zahl hier ein zweites Mal.
+ * Dieselben Zahlen wie `.cp-topbar` im Cable Planner — dieses Repo laeuft
+ * auch ALLEIN und kann das Paket nicht laden. Als Klasse und nicht am
+ * Element, damit `chrome-parity.mjs` in der Suite die 40 messen kann.
  *
- * ALS KLASSE UND NICHT ALS MASS AM ELEMENT: als benannte Klasse ist die 40
- * eine Zusage, die `scripts/chrome-parity.mjs` in der Suite messen kann. Am
- * Element waere sie dieselbe Zahl, aber keine Regel. */
+ * Glas statt Fläche: die Zeile klebt oben, der Inhalt läuft darunter durch. */
 .kopf {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--steg-2);
   height: 40px;
   flex: none;
-  padding: 0 12px;
-  background: var(--flaeche);
+  padding: 0 var(--steg-3);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--glas);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   border-bottom: 1px solid var(--rand);
 }
 
-/* 32 px ist die Mindestgroesse des Signets am Bildschirm (Brand Guide 2.0). */
+/* Mindestgroesse des Signets am Bildschirm (Brand Guide 2.0). Eckig — das
+   Signet bekommt nie einen Radius. */
 .kopf-signet { display: flex; flex: none; }
-.kopf-signet img { height: 32px; width: auto; }
+.signet { height: 22px; width: auto; display: block; }
+.signet-form { fill: var(--logo); }
+.signet-punkt { fill: var(--signal); }
 
-.nur-dunkel { display: var(--logo-auf-dunkel); }
-.nur-hell { display: var(--logo-auf-hell); }
-
-/* 120 px ist die Mindestbreite des Hauptlogos; Schutzraum darunter. */
-.ueber-logo { display: block; margin-bottom: var(--steg-4); }
-.ueber-logo img { width: 160px; height: auto; }
+/* Hauptlogo im Über-Bereich als Maske, gefuellt mit `--logo`. Seitenverhaeltnis
+   des Kit-SVG. */
+.ueber-logo {
+  display: block;
+  width: 160px;
+  aspect-ratio: 1110 / 291;
+  margin-bottom: var(--steg-4);
+  background: var(--logo);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+}
 
 .kopf .marke {
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: 650;
+  color: var(--text-stark);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 0 1 auto;
+  margin-right: var(--steg-1);
 }
 
 /* Schiebt alles Folgende ans rechte Ende — der Einstellungen-Knopf ist der
@@ -173,92 +140,113 @@ body {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--steg-2);
+  flex: none;
 }
 
-.kopf-knopf {
+.kopf-knopf,
+.menue-knopf {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: var(--ziel);
-  padding: 0 8px;
-  background: var(--erhoben);
-  border: 1px solid transparent;
-  color: var(--text);
-  cursor: pointer;
+  min-height: 30px;
+  padding: 0 var(--steg-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--r-voll);
+  color: var(--text-stark);
   font: inherit;
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color var(--dauer-1) var(--ease);
 }
 
-.kopf-knopf:hover { border-color: var(--rand); }
+.kopf-knopf:hover:not(:disabled),
+.menue-knopf:hover:not(:disabled),
+.menue-knopf.offen {
+  background: color-mix(in oklab, var(--zustand) 7%, transparent);
+}
 
 /* Das Wort erst ab breiteren Fenstern; darunter traegt der Knopf nur sein
  * Zeichen, damit die 40-px-Zeile nicht bricht. */
 .nur-breit { display: none; }
 @media (min-width: 900px) { .nur-breit { display: inline; } }
 
-.menue { position: relative; }
-
-.menue-knopf {
-  background: none;
-  border: none;
-  color: var(--text);
-  padding: 0 8px;
-  min-height: var(--ziel);
-  cursor: pointer;
-  font: inherit;
+/* ── Darstellung: Auto · Hell · Dunkel ─────────────────────────────────── */
+.themen {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--r-voll);
+  background: var(--flaeche-2);
 }
 
-.menue-knopf:hover,
-.menue-knopf.offen { background: var(--erhoben); }
+.themen button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  min-height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: var(--r-voll);
+  background: transparent;
+  color: var(--leise);
+  transition: background-color var(--dauer-2) var(--ease), color var(--dauer-2) var(--ease);
+}
+
+.themen button:hover:not(:disabled) { background: transparent; color: var(--text-stark); }
+
+.themen button[aria-pressed='true'],
+.themen button[aria-pressed='true']:hover {
+  background: var(--erhoben);
+  color: var(--akzent);
+  box-shadow: var(--schatten-1);
+}
+
+.menue { position: relative; }
 
 .menue-klappe {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 6px);
   left: 0;
   z-index: 50;
   min-width: 220px;
-  padding: 4px 0;
-  background: var(--flaeche);
+  padding: 6px;
+  background: var(--erhoben);
   border: 1px solid var(--rand);
+  border-radius: var(--r-m);
+  box-shadow: var(--schatten-2);
   display: flex;
   flex-direction: column;
+  animation: aufklappen var(--dauer-2) var(--ease);
+}
+
+@keyframes aufklappen {
+  from { opacity: 0; transform: translateY(-4px); }
 }
 
 .menue-punkt {
   background: none;
   border: none;
-  color: var(--text);
+  border-radius: var(--r-s);
+  color: var(--text-stark);
   text-align: left;
-  padding: 0 12px;
+  padding: 0 var(--steg-3);
   min-height: var(--ziel);
   cursor: pointer;
   font: inherit;
 }
 
-.menue-punkt:hover:not(:disabled) { background: var(--erhoben); }
+.menue-punkt:hover:not(:disabled) { background: var(--flaeche-2); }
 .menue-punkt:disabled { color: var(--leise); cursor: not-allowed; }
-.menue-trenner { height: 1px; margin: 4px 0; background: var(--rand); }
-
-/* Die Leiste SCROLLT waagerecht, statt aus dem Fenster zu laufen. Gemessen
- * auf 390 px: der Rumpf war 601 px breit, drei Reiter standen jenseits des
- * Randes, und die ganze Seite liess sich seitlich schieben. `flex: none` an
- * den Knoepfen ist der Punkt: ohne das schrumpfen sie stattdessen, und dann
- * steht „Connection points" zweizeilig in 60 px. */
-.reiter-leiste {
-  display: flex;
-  gap: var(--steg-1);
-  padding: var(--steg-2) var(--steg-3) 0;
-  border-bottom: 1px solid var(--rand);
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  flex: none;
-}
+.menue-trenner { height: 1px; margin: 4px 6px; background: var(--rand); }
 
 .versteckt { display: none; }
 
-/* Dialoge sind FLAECHEN, keine Karten: kein Radius, kein Schatten,
- * Kopflinie oben, Aktionen unten rechts (ADR-007 Abschnitt 6). */
+/* ── Dialoge ─────────────────────────────────────────────────────────────
+ * Schwebendes Blatt: Radius xl, Schatten 3, kein Kopflinie. Der Rumpf
+ * scrollt, die Fusszeile bleibt stehen (ADR-007: „der Drucken-Knopf war
+ * nicht erreichbar"). */
 .dialog-hinter {
   position: fixed;
   inset: 0;
@@ -266,161 +254,113 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.6);
+  padding: var(--steg-4);
+  background: var(--schleier);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .dialog {
   width: 100%;
-  max-width: 440px;
-  max-height: 90vh;
+  max-width: 460px;
+  max-height: 90dvh;
   display: flex;
   flex-direction: column;
-  background: var(--flaeche);
+  background: var(--erhoben);
   border: 1px solid var(--rand);
+  border-radius: var(--r-xl);
+  box-shadow: var(--schatten-3);
   color: var(--text);
+  overflow: hidden;
+  animation: auftauchen var(--dauer-2) var(--ease);
+}
+
+@keyframes auftauchen {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
 }
 
 .dialog-kopf {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 8px 12px;
-  border-bottom: 2px solid var(--signal);
+  gap: var(--steg-3);
+  padding: var(--steg-4) var(--steg-4) var(--steg-2) var(--steg-5);
 }
 
-.dialog-kopf h2 { margin: 0; font-size: 1rem; }
+.dialog-kopf h2 { margin: 0; font-size: 1.15rem; font-weight: 700; }
 
 .dialog-zu {
   background: none;
   border: none;
+  border-radius: var(--r-voll);
   color: var(--leise);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   line-height: 1;
   min-width: var(--ziel);
   min-height: var(--ziel);
+  padding: 0;
   cursor: pointer;
 }
 
-/* Der Rumpf scrollt, die Fusszeile bleibt stehen — der gemeldete Fehler aus
- * ADR-007 („der Drucken-Knopf war nicht erreichbar"). */
-.dialog-rumpf { padding: 12px; overflow-y: auto; }
-.dialog-rumpf h3 { font-size: 0.85rem; color: var(--leise); margin: 12px 0 6px; }
-.dialog-rumpf section:first-child h3 { margin-top: 0; }
+.dialog-rumpf { padding: var(--steg-2) var(--steg-5) var(--steg-4); overflow-y: auto; }
+.dialog-rumpf section + section { margin-top: var(--steg-5); }
+.dialog-rumpf h3 { font-size: 0.95rem; font-weight: 650; margin: 0 0 var(--steg-2); }
 
 .dialog-fuss {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  padding: 8px 12px;
-  border-top: 1px solid var(--rand);
+  gap: var(--steg-2);
+  padding: var(--steg-3) var(--steg-5) var(--steg-4);
 }
 
+/* Der Schliessen-Knopf des Dialogs: weich, nicht gefuellt — die eine
+   Hauptaktion einer Ansicht ist `.knopf-primaer`. */
 .knopf-haupt {
-  background: var(--erhoben);
-  border: 1px solid var(--rand);
-  color: var(--text);
-  padding: 0 var(--steg-3);
+  background: var(--akzent-weich);
+  border: none;
+  border-radius: var(--r-voll);
+  color: var(--text-stark);
+  font-weight: 600;
+  padding: 0 var(--steg-4);
   min-height: var(--ziel);
   cursor: pointer;
-  font: inherit;
+  font-family: inherit;
 }
 
-.wahl { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; cursor: pointer; }
+.wahl { display: flex; gap: var(--steg-2); align-items: flex-start; padding: 4px 0; cursor: pointer; }
 .wahl em { display: block; font-style: normal; font-size: 0.8rem; color: var(--leise); }
-.leise { color: var(--leise); margin: 2px 0; }
-
-/* ── Helles Thema ────────────────────────────────────────────────────────
- *
- * NUR die Token werden getauscht, keine Regel darunter — genau dafuer ist die
- * Token-Schicht da (ADR-007). `data-thema` steht am Wurzelknoten und kommt
- * aus `lib/thema.ts`; ohne Attribut gilt die Angabe des Betriebssystems.
- *
- * Die Marken-Werte bleiben dieselben Farben in anderer ROLLE: Zumpe Navy ist
- * im hellen Thema die Schrift, nicht die Flaeche. Tally-Rot bleibt Tally-Rot
- * — es ist das Aufnahmelicht und kein Flaechenton. */
-:root[data-thema='hell'] {
-  color-scheme: light;
-  --bg: #F6F5F0;
-  --flaeche: #FFFFFF;
-  --erhoben: #E8EAEC;
-  --rand: rgba(19, 32, 64, 0.16);
-  --text: #132040;
-  --leise: #5A6B82;
-  --logo-auf-dunkel: none;
-  --logo-auf-hell: block;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-thema='dunkel']) {
-    color-scheme: light;
-    --bg: #F6F5F0;
-    --flaeche: #FFFFFF;
-    --erhoben: #E8EAEC;
-    --rand: rgba(19, 32, 64, 0.16);
-    --text: #132040;
-    --leise: #5A6B82;
-    --logo-auf-dunkel: none;
-    --logo-auf-hell: block;
-  }
-}
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * DIE BEDIEN-BAUSTEINE (suite#231)
  *
- * DER BEFUND. Sieben Ansichten — Anschlusspunkte, Grundriss, Verteilung,
- * Trassen, Schaltstellen, Steuerung, Maengel — und im Stilblatt gab es fuer
- * KEINE davon etwas ausser `.leiste` und einer Tabelle. Sechs der sieben
- * begannen im Markup mit derselben Zeile `<div className="leiste">`, und
- * dahinter standen zwei bis vier nackte Browser-Felder ohne Beschriftung,
- * mit einem Platzhalter als einziger Auskunft darueber, was hineingehoert.
- * Der Grundriss ist die einzige Ansicht mit eigenen Regeln, und die
- * betreffen das Bild, nicht die Bedienung.
+ * Wortgleich mit dem `inventory-planner` — beide Repos laufen auch ALLEIN
+ * und koennen kein gemeinsames Paket laden. Wer hier eine Regel aendert,
+ * aendert sie dort mit.
  *
- * Nutzer-Meldung (suite#231): „aktuell ist die Ui so schlecht das beide
- * module unbrauchbar sind."
- *
- * DAZU EIN ECHTER DEFEKT. `.marke` war zweimal vergeben: einmal fuer den
- * Gebaeudenamen in der Kopfzeile, einmal fuer die Beschriftung eines Punktes
- * auf dem Grundriss. Die zweite Regel steht weiter unten und gewann —
- * der App-Name lag als absolut positioniertes Kaestchen mit Rahmen ueber dem
- * Datei-Menue (gemessen: 37 px Ueberlappung) und nahm wegen
- * `pointer-events: none` keine Klicks an. Die Grundriss-Marke heisst jetzt
- * `.plan-marke`.
- *
- * DIE BAUSTEINE SIND WORTGLEICH DIE DES `inventory-planner`. Beide Repos
- * laufen auch ALLEIN und koennen kein gemeinsames Paket laden — dieselbe
- * Lage wie bei den 40 px der Kopfzeile, die `chrome-parity.mjs` in der Suite
- * deshalb je Repo nachmisst statt sie zu teilen. Wer hier eine Regel
- * aendert, aendert sie dort mit; `ui:check` misst in beiden dasselbe.
+ * `.marke` war einmal doppelt vergeben (Kopfzeile + Grundriss) und die
+ * zweite Regel legte den App-Namen ueber das Datei-Menue. Die Grundriss-
+ * Marke heisst deshalb `.plan-marke`.
  * ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── Reiter ──────────────────────────────────────────────────────────────
  *
- * Die Leiste SCROLLT waagerecht, statt aus dem Fenster zu laufen. Gemessen
- * auf 390 px: der Rumpf war 601 px breit, drei Reiter standen jenseits des
- * Randes, und die ganze Seite liess sich seitlich schieben. Das ist derselbe
- * Fehler, den `mobil:check` im Cable-Planner seit B-44 Teil 3 verbietet —
- * nur hatte ihn hier niemand gemessen.
- *
- * `flex: none` an den Knoepfen ist der Punkt: ohne das schrumpfen sie
- * stattdessen, und dann steht „Connection points" zweizeilig in 60 px. */
+ * Die Leiste SCROLLT waagerecht, statt aus dem Fenster zu laufen (gemessen
+ * auf 390 px: drei Reiter jenseits des Randes). `flex: none` an den Knoepfen:
+ * sonst schrumpfen sie und „Connection points" bricht zweizeilig. */
 .reiter-leiste {
   display: flex;
   gap: var(--steg-1);
-  padding: var(--steg-2) var(--steg-3) 0;
-  border-bottom: 1px solid var(--rand);
+  padding: var(--steg-2) var(--steg-3);
   overflow-x: auto;
   overflow-y: hidden;
-  scrollbar-width: thin;
+  scrollbar-width: none;
   flex: none;
 }
 
 .reiter {
   background: none;
-  border: 1px solid transparent;
-  border-bottom: none;
+  border: none;
+  border-radius: var(--r-voll);
   color: var(--leise);
   padding: 0 var(--steg-3);
   min-height: var(--ziel);
@@ -428,137 +368,149 @@ body {
   flex: none;
   cursor: pointer;
   font: inherit;
+  font-weight: 550;
+  transition: background-color var(--dauer-1) var(--ease), color var(--dauer-1) var(--ease);
 }
 
-.reiter:hover { color: var(--text); }
+.reiter:hover:not(:disabled) { color: var(--text-stark); background: var(--flaeche-2); }
 
-.reiter.aktiv {
-  /* Der gewaehlte Reiter ist die erhobene Flaeche, nicht dieselbe wie die
-     Bloecke darunter — sonst haette „hier bin ich" keine eigene Stufe und
-     `--erhoben` waere ein Token, das niemand benutzt. */
-  background: var(--erhoben);
-  border-color: var(--rand);
-  color: var(--text);
+/* „Hier bin ich" ist Fläche + Akzent, nicht nur Farbe. */
+.reiter.aktiv,
+.reiter.aktiv:hover {
+  background: var(--akzent-weich);
+  color: var(--text-stark);
+  font-weight: 650;
 }
 
-/* Die Frage des Reiters — „Was ist da, wieviel, und wo liegt es?". Sie ist
-   die Ueberschrift der Ansicht und stand vorher als grauer Absatz ohne
-   Gewicht darunter. */
+/* Die Frage des Reiters ist die Ueberschrift der Ansicht. */
 .frage {
-  color: var(--leise);
-  margin: 0 0 var(--steg-4);
-  font-size: 0.95rem;
+  color: var(--text-stark);
+  margin: var(--steg-1) 0 var(--steg-4);
+  font-size: 1.15rem;
+  font-weight: 650;
+  line-height: 1.35;
+  text-wrap: balance;
 }
 
 /* ── Bedienpunkte ────────────────────────────────────────────────────────
  *
- * EINE Regel fuer alle vier Arten, und sie traegt `--ziel`. Vorher stand hier
- * gar keine Hoehe: jedes Feld und jeder Knopf hatte die, die der Browser ihm
- * aus `padding: 0.25rem` gab (gemessen: 25 px). */
+ * EINE Regel fuer alle vier Arten, und sie traegt `--ziel`. */
 input,
 select,
 button,
 textarea {
-  background: var(--flaeche);
-  border: 1px solid var(--rand);
-  color: var(--text);
-  padding: 0 var(--steg-2);
+  background: var(--flaeche-2);
+  border: 1px solid transparent;
+  border-radius: var(--r-m);
+  color: var(--text-stark);
+  padding: 0 var(--steg-3);
   min-height: var(--ziel);
   font: inherit;
   max-width: 100%;
+  transition: border-color var(--dauer-1) var(--ease), background-color var(--dauer-1) var(--ease);
+}
+
+input:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) { border-color: var(--rand-stark); }
+
+input[type='checkbox'],
+input[type='radio'] {
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--akzent);
 }
 
 textarea {
-  padding: var(--steg-2);
+  padding: var(--steg-2) var(--steg-3);
   line-height: 1.45;
 }
 
 button {
-  padding: 0 var(--steg-3);
+  padding: 0 var(--steg-4);
+  font-weight: 550;
   cursor: pointer;
 }
 
-button:hover:not(:disabled) { background: var(--erhoben); }
+button:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--zustand) 10%, var(--flaeche-2));
+}
+
+button:active:not(:disabled) { scale: 0.97; }
 
 button:disabled {
-  color: var(--leise);
-  cursor: default;
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 button.still {
   background: none;
-  border-color: transparent;
   color: var(--leise);
 }
 
-button.still:hover { border-color: var(--rand); color: var(--text); }
+button.still:hover:not(:disabled) { background: var(--flaeche-2); color: var(--text-stark); }
 
-/* Der Primaerknopf traegt den roten Punkt aus ADR-007 Abschnitt 4 — er macht
-   sichtbar, WELCHER der eine ist. Der Punkt ist eckig: „der Tally-Punkt ist
-   der Satzpunkt der Hausschrift, kein Kreis" (Abschnitt 3). */
+/* Die eine Hauptaktion: Pill im Akzent mit weichem Schein. */
 .knopf-primaer {
   display: inline-flex;
   align-items: center;
   gap: var(--steg-2);
-  background: var(--erhoben);
-  border-color: var(--rand);
-  color: var(--text);
-  font-weight: 600;
+  background: var(--akzent);
+  color: var(--akzent-text);
+  border-radius: var(--r-voll);
+  padding: 0 var(--steg-5);
+  font-weight: 650;
+  box-shadow: var(--schatten-akzent);
+  transition: translate var(--dauer-1) var(--ease), background-color var(--dauer-1) var(--ease);
 }
 
-.knopf-primaer::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  background: var(--signal);
-  flex: none;
+.knopf-primaer:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--akzent), var(--bg) 12%);
+  translate: 0 -1px;
 }
 
-.knopf-primaer:disabled::before { background: var(--leise); }
+.knopf-primaer:disabled { box-shadow: none; }
 
-/* Sichtbarer Fokus auf jedem Bedienpunkt. Vorher gab es nur den Ring des
-   Browsers, und der ist auf der dunklen Flaeche kaum zu sehen. */
-:where(input, select, button, textarea, a):focus-visible {
+/* Fokus: 2-px-Ring in Tally-Rot auf jedem Bedienpunkt. */
+:where(input, select, button, textarea, a, summary):focus-visible {
   outline: 2px solid var(--signal);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
 
-/* ── Block: die Flaeche mit Kopflinie ────────────────────────────────────
+a { color: var(--akzent); }
+
+/* ── Block: die Karte ────────────────────────────────────────────────────
  *
- * Die Kopflinie aus ADR-007 Abschnitt 3 — „Kicker in Versalien, darunter
- * eine durchgehende Linie ... Eine pro Flaeche". Sie stand in diesem Repo
- * bisher nur an den Dialogen. */
+ * Haarlinie + Schatten 1 + Radius l. Der Kopf ist ein normaler Titel in
+ * Satzschreibung — die Kopflinie (Versalien-Kicker + Linie) entfällt seit
+ * 2026-10-13. */
 .block {
   border: 1px solid var(--rand);
+  border-radius: var(--r-l);
   background: var(--flaeche);
-  padding: var(--steg-3) var(--steg-4) var(--steg-4);
+  box-shadow: var(--schatten-1);
+  padding: var(--steg-4) var(--steg-5) var(--steg-5);
   margin: 0 0 var(--steg-4);
 }
 
 .block > h2,
 .block > h3 {
   margin: 0 0 var(--steg-3);
-  padding-bottom: var(--steg-2);
-  border-bottom: 1px solid var(--rand);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--leise);
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--text-stark);
 }
 
-/* Ein Block, der sich aufklappen laesst — „Neu anlegen" steht nicht jedem im
-   Weg, der nur nachsehen will, was da ist. */
+/* Ein aufklappbarer Block — „Neu anlegen" steht nicht jedem im Weg. */
 .block > summary {
   cursor: pointer;
   list-style: none;
-  margin: 0 0 var(--steg-2);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--leise);
+  margin: calc(-1 * var(--steg-2)) 0;
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--text-stark);
   min-height: var(--ziel);
+  border-radius: var(--r-m);
   display: flex;
   align-items: center;
   gap: var(--steg-2);
@@ -568,29 +520,25 @@ button.still:hover { border-color: var(--rand); color: var(--text); }
 
 .block > summary::before {
   content: '+';
-  color: var(--signal);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--r-voll);
+  background: var(--akzent-weich);
+  color: var(--akzent);
   font-size: 1rem;
   line-height: 1;
+  flex: none;
 }
 
-.block[open] > summary {
-  padding-bottom: var(--steg-2);
-  border-bottom: 1px solid var(--rand);
-  margin-bottom: var(--steg-3);
-}
-
+.block[open] > summary { margin-bottom: var(--steg-3); }
 .block[open] > summary::before { content: '\2212'; }
 
 /* ── Feldzeile und Beschriftung ──────────────────────────────────────────
  *
  * JEDES Feld traegt seine Beschriftung UEBER sich und nicht im Platzhalter.
- * Ein Platzhalter verschwindet beim Tippen — wer ein Formular halb ausgefuellt
- * verlaesst und zurueckkommt, sieht dann Werte ohne Fragen. Gemessen in
- * `Anschlusspunkte`: zwei Felder, beide nur mit Platzhalter.
- *
- * `min-width: 0` an `.feld` ist kein Zierrat: ohne das weigern sich
- * Flex-Kinder zu schrumpfen, und dann sprengt die Zeile auf dem Telefon den
- * Rand — genau der Ueberlauf, gegen den `ui:check` steht. */
+ * `min-width: 0` an `.feld`: sonst sprengt die Zeile auf dem Telefon den Rand. */
 .zeile {
   display: flex;
   flex-wrap: wrap;
@@ -605,8 +553,9 @@ button.still:hover { border-color: var(--rand); color: var(--text); }
   display: flex;
   flex-direction: column;
   gap: var(--steg-1);
-  color: var(--leise);
+  color: var(--text-stark);
   font-size: 0.85rem;
+  font-weight: 550;
   min-width: 0;
   flex: 1 1 12rem;
 }
@@ -615,49 +564,38 @@ button.still:hover { border-color: var(--rand); color: var(--text); }
 .feld > select,
 .zeile label > input,
 .zeile label > select {
-  color: var(--text);
+  color: var(--text-stark);
+  font-weight: 400;
   min-width: 0;
   width: 100%;
 }
 
-/* Ein schmales Feld ist schmal, aber nie schmaler als seine Beschriftung.
-   `5rem` stand hier als feste Breite und schnitt „Quantity" ab.
-
-   `.zeile .schmal` und nicht `.schmal`: die Regel darueber trifft
-   `.zeile label` und hat damit zwei Gewichte gegen eines — eine
-   Klassenregel allein verliert gegen sie, egal wie weit unten sie steht.
-   Gemessen: das Mengenfeld lief in der Stufe davor ueber die halbe Zeile. */
+/* `.zeile .schmal`: die Regel darueber hat zwei Gewichte gegen eines. */
 .zeile .schmal,
 .zeile .feld.schmal { flex: 0 0 7rem; }
 .schmal > input,
 input.schmal,
 select.schmal { width: 100%; }
 
-/* Ein Datei-Feld sieht nirgends aus wie ein Knopf. Das Label IST der Knopf,
-   das Feld darin ist unsichtbar — sonst steht ein „Durchsuchen…" neben einem
-   Text, der nicht dazu passt. */
+/* Ein Datei-Feld sieht nirgends aus wie ein Knopf: das Label IST der Knopf. */
 .datei-knopf {
   display: inline-flex;
   align-items: center;
   gap: var(--steg-2);
-  padding: 0 var(--steg-3);
+  padding: 0 var(--steg-4);
   min-height: var(--ziel);
-  border: 1px solid var(--rand);
-  background: var(--flaeche);
+  border-radius: var(--r-voll);
+  background: var(--akzent-weich);
+  color: var(--text-stark);
+  font-weight: 550;
   cursor: pointer;
   flex: none;
 }
 
-.datei-knopf:hover { background: var(--erhoben); }
+.datei-knopf:hover { background: color-mix(in oklab, var(--akzent) 18%, transparent); }
 .datei-knopf input[type='file'] { display: none; }
 
-/* ── Spalten und Kacheln ─────────────────────────────────────────────────
- *
- * `auto-fit`/`minmax` statt fester Spaltenzahl: das Raster entscheidet selbst,
- * wieviele Spalten in die Breite passen, und braucht dafuer keinen
- * Umbruchpunkt. Die beiden `@media (max-width: 900px)`-Bloecke, die vorher
- * `.inventur .spalten` und `.werte .spalten` einzeln zurueckstellten, fallen
- * damit weg. */
+/* ── Spalten und Kacheln ───────────────────────────────────────────────── */
 .spalten {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(20rem, 100%), 1fr));
@@ -674,7 +612,9 @@ select.schmal { width: 100%; }
 
 .kachel {
   border: 1px solid var(--rand);
+  border-radius: var(--r-l);
   background: var(--flaeche);
+  box-shadow: var(--schatten-1);
   padding: var(--steg-3) var(--steg-4);
   display: flex;
   flex-direction: column;
@@ -683,9 +623,10 @@ select.schmal { width: 100%; }
 }
 
 .kachel strong {
-  font-size: 1.35rem;
-  font-weight: 600;
-  /* Eine lange Zahl bricht, statt die Kachel zu sprengen. */
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-stark);
+  font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
@@ -694,16 +635,11 @@ select.schmal { width: 100%; }
   font-size: 0.85rem;
 }
 
-/* Nur was zu tun ist, traegt Farbe. Eine Kachel, die immer warnt, liest nach
-   einer Woche niemand mehr — dann faellt der Tag nicht mehr auf, an dem sie
-   es zu Recht tut. */
-.kachel.achtung { border-color: var(--warn); }
-.kachel.achtung strong { color: var(--warn); }
+/* Nur was zu tun ist, traegt Farbe. */
+.kachel.achtung { border-color: var(--warn); background: var(--warn-weich); }
+.kachel.achtung strong { color: var(--warn-text); }
 
-/* ── Werkzeugleiste ueber einer Liste ────────────────────────────────────
- *
- * Suche links, Zaehler rechts. Der Zaehler stand vorher direkt neben dem
- * Suchfeld und sah aus wie zu ihm gehoerig; er gehoert zur LISTE. */
+/* ── Werkzeugleiste ueber einer Liste ──────────────────────────────────── */
 .leiste {
   display: flex;
   gap: var(--steg-2);
@@ -713,31 +649,31 @@ select.schmal { width: 100%; }
 }
 
 .leiste > input[type='search'],
-.leiste > input:not(.schmal) { flex: 1 1 16rem; min-width: 0; }
+.leiste > input:not(.schmal) { flex: 1 1 16rem; min-width: 0; border-radius: var(--r-voll); padding-inline: var(--steg-4); }
 .leiste .zaehler { margin-left: auto; }
 
 /* ── Tabellen ────────────────────────────────────────────────────────────
  *
- * Der Kopf KLEBT. Eine Anschlussliste ist lang; wer bis Zeile achtzig
- * gescrollt hat, weiss sonst nicht mehr, welche Spalte der Kreis ist.
- *
- * Der Rahmen scrollt in sich, statt die Seite zu sprengen (B-44 Teil 3). */
+ * Der Kopf KLEBT; der Rahmen scrollt in sich (B-44 Teil 3). */
 .tabelle-rahmen {
   overflow: auto;
   max-height: min(70vh, 46rem);
   border: 1px solid var(--rand);
+  border-radius: var(--r-l);
   background: var(--flaeche);
+  box-shadow: var(--schatten-1);
   margin-bottom: var(--steg-4);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
 }
 
 caption {
   text-align: left;
-  padding: var(--steg-2);
+  padding: var(--steg-3) var(--steg-4) var(--steg-2);
   color: var(--leise);
 }
 
@@ -749,58 +685,40 @@ td {
   vertical-align: middle;
 }
 
+th:first-child,
+td:first-child { padding-left: var(--steg-4); }
+
+tbody tr:last-child td { border-bottom: none; }
+
 th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--erhoben);
+  background: var(--flaeche);
   color: var(--leise);
   font-weight: 600;
   font-size: 0.8rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
   white-space: nowrap;
+  border-bottom-color: var(--rand-stark);
 }
 
-/* Zebra macht eine breite Zeile ueber die ganze Breite lesbar. `color-mix`
-   statt eines eigenen Tokens: der Ton muss in BEIDEN Themen derselbe
-   Abstand zur Flaeche sein, und ein fester Wert waere das in einem von
-   beiden nicht. */
-tbody tr:nth-child(even) td {
-  background: color-mix(in srgb, var(--erhoben) 40%, transparent);
-}
-
-tbody tr:hover td { background: var(--erhoben); }
+tbody tr:hover td { background: color-mix(in oklab, var(--zustand) 4%, transparent); }
 
 .rechts { text-align: right; }
-.warnung td { color: var(--warn); }
+.warnung td { color: var(--warn-text); }
 
-/* Ein Feld IN einer Zelle fuellt die Spalte nicht aus. Ohne diese Regel zieht
-   `width: 100%` aus `.schmal` die Mengen- und Ziel-Felder auf die volle
-   Spaltenbreite — gemessen 200 px fuer eine zweistellige Zahl, und die Spalte
-   daneben wird dafuer gestaucht. `ch` und nicht `px`: die Breite haengt an der
-   Ziffer, nicht an einer geratenen Zahl.
-
-   Im Kartenmodus (unter 700 px) gilt sie nicht: dort steht das Feld allein in
-   seiner Zeile und darf die Breite nehmen. */
+/* Ein Feld IN einer Zelle fuellt die Spalte nicht aus — `ch`, nicht `px`. */
 td input.schmal,
 td select.schmal { width: 7ch; }
 
 td input[type='number'] { width: 8ch; text-align: right; }
 td select { max-width: 100%; }
 
-/* ── Liste als Karten, wenn die Tabelle nicht mehr passt ─────────────────
- *
- * Unter 700 px wird jede Zeile zu einer Karte und jede Zelle traegt ihren
- * Spaltennamen vor sich — das Markup bleibt eine Tabelle, die Darstellung
- * nicht. Ohne das steht im Telefon eine achtspaltige Tabelle in einem
- * Scrollfenster von 390 px, und man sieht nie Name und Kreis zugleich.
- *
- * Die Ansicht liefert den Spaltennamen als `data-spalte` an der Zelle. Wo
- * sie das nicht tut, faellt die Karte auf reine Werte zurueck — lesbar,
- * nur ohne Beschriftung. */
+/* ── Liste als Karten unter 700 px ───────────────────────────────────────
+ * Das Markup bleibt eine Tabelle, die Darstellung nicht; jede Zelle traegt
+ * ihren Spaltennamen aus `data-spalte` vor sich. */
 @media (max-width: 700px) {
-  .tabelle-rahmen { max-height: none; border: none; background: none; }
+  .tabelle-rahmen { max-height: none; border: none; background: none; box-shadow: none; border-radius: 0; overflow: visible; }
   .tabelle-rahmen thead { display: none; }
   .tabelle-rahmen table,
   .tabelle-rahmen tbody,
@@ -809,12 +727,15 @@ td select { max-width: 100%; }
 
   .tabelle-rahmen tr {
     border: 1px solid var(--rand);
+    border-radius: var(--r-l);
     background: var(--flaeche);
+    box-shadow: var(--schatten-1);
     margin-bottom: var(--steg-2);
-    padding: var(--steg-2);
+    padding: var(--steg-3) var(--steg-4);
   }
 
-  .tabelle-rahmen td {
+  .tabelle-rahmen td,
+  .tabelle-rahmen td:first-child {
     border: none;
     padding: var(--steg-1) 0;
     display: flex;
@@ -828,25 +749,15 @@ td select { max-width: 100%; }
     flex: 0 0 40%;
     color: var(--leise);
     font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
   }
 
   .tabelle-rahmen td:empty { display: none; }
-  /* In der Karte steht das Feld allein in seiner Zeile und darf die Breite
-     nehmen — die Regel aus dem Tabellenmodus gilt hier nicht. */
   .tabelle-rahmen td input,
   .tabelle-rahmen td select { width: 100%; text-align: left; }
-  .tabelle-rahmen tbody tr:nth-child(even) td,
   .tabelle-rahmen tbody tr:hover td { background: none; }
 }
 
-/* ── Text ────────────────────────────────────────────────────────────────
- *
- * EINE Regel fuer die drei Textarten statt vier Kopien mit 46rem und 52rem
- * im Wechsel. `60ch` ist eine Zeilenlaenge und keine Kastenbreite: sie haengt
- * an der Schriftgroesse und bleibt auch dann richtig, wenn jemand die
- * Schrift des Browsers hochstellt. */
+/* ── Text ──────────────────────────────────────────────────────────────── */
 .leer,
 .hinweis,
 p.warnung {
@@ -857,33 +768,30 @@ p.warnung {
 
 .leer,
 .hinweis { color: var(--leise); }
-p.warnung { color: var(--warn); }
+p.warnung { color: var(--warn-text); }
 
 .leise { color: var(--leise); margin: 2px 0; }
-.zaehler { color: var(--leise); white-space: nowrap; }
+.zaehler { color: var(--leise); white-space: nowrap; font-variant-numeric: tabular-nums; }
 
-/* Ein Leerzustand, der auf einer eigenen Flaeche steht statt als grauer Satz
-   im Nichts. Er ist das Erste, was jemand in einer frischen Installation
-   sieht — und war vorher das Einzige. */
+/* Leerzustand: eigene Fläche mit dem weichen Schein — die einzige Stelle mit
+   Hintergrundschein (nie hinter Plan oder Tabelle). */
 .leer-flaeche {
-  border: 1px dashed var(--rand);
+  border: 1px solid var(--rand);
+  border-radius: var(--r-l);
   padding: var(--steg-6) var(--steg-4);
+  margin-bottom: var(--steg-4);
   text-align: center;
+  background:
+    radial-gradient(28rem 14rem at 15% 0%, var(--schein-1), transparent 70%),
+    radial-gradient(22rem 12rem at 95% 100%, var(--schein-2), transparent 70%),
+    var(--flaeche);
 }
 
 .leer-flaeche .leer { margin-inline: auto; }
 
 /* ── Statusleiste ────────────────────────────────────────────────────────
- *
- * ADR-007 Abschnitt 6: „Meldungen links · Zaehler rechts", 24 px.
- *
- * Der ADR nahm dieses Repo bis zum 2026-09-13 ausdruecklich aus: „fuehren
- * Reiter ohne Zeichenbereich — dort waere sie eine leere Zeile". Beide
- * Haelften stimmten nicht: dieses Repo HAT einen Zeichenbereich (der
- * Grundriss), und leer waere der Zaehler auch sonst nicht — jede der sieben
- * Ansichten hat eine Zahl, die sie ohnehin berechnet. Was der ADR verbietet,
- * steht auch jetzt nicht darin — keine Ampel, keine Bewertung, nur
- * Ableitbares. */
+ * ADR-007 Abschnitt 6: „Meldungen links · Zaehler rechts", 24 px. Nur
+ * Ableitbares — keine Ampel, keine Bewertung. */
 .statusleiste {
   display: flex;
   align-items: center;
@@ -891,14 +799,13 @@ p.warnung { color: var(--warn); }
   min-height: 24px;
   padding: 0 var(--steg-3);
   flex: none;
-  background: var(--flaeche);
+  background: var(--bg);
   border-top: 1px solid var(--rand);
   color: var(--leise);
   font-size: 0.8rem;
 }
 
 .statusleiste .rechts { margin-left: auto; }
-
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * WAS EINE ANSICHT WIRKLICH NUR FUER SICH BRAUCHT
@@ -907,23 +814,26 @@ p.warnung { color: var(--warn); }
 /* Ein gescheiterter Schreibvorgang steht oben und faellt auf. */
 .fehler {
   border: 1px solid var(--warn);
+  border-radius: var(--r-m);
+  background: var(--warn-weich);
   padding: var(--steg-2) var(--steg-3);
-  color: var(--warn);
+  color: var(--warn-text);
   max-width: 60ch;
   margin: 0 0 var(--steg-3);
 }
 
 /* ── Grundriss ───────────────────────────────────────────────────────────
  *
- * Das Feld behaelt seine Breite auch ohne Bild: die Lagen stehen in Metern
- * und bleiben setzbar, wenn der Scan auf diesem Rechner fehlt (Issue #1). */
+ * Der Plan liegt auf `--versenkt`: im Hellen ein ruhiges Grau unter dem
+ * Scan, im Dunkeln eine Stufe UNTER dem Grund — der Plan ist ein Fenster,
+ * keine Karte. Das Feld behaelt seine Breite auch ohne Bild (Issue #1). */
 .grundriss-feld {
   position: relative;
-  /* Groessenbezug fuer `cqw` der Marken: 1cqw ist ein Hundertstel der
-   * Feldbreite, und in Breiten stehen beide Achsen der Lage. */
+  /* `cqw` der Marken: 1cqw ist ein Hundertstel der Feldbreite. */
   container-type: inline-size;
   border: 1px solid var(--rand);
-  background: var(--flaeche);
+  border-radius: var(--r-l);
+  background: var(--versenkt);
   min-height: 18rem;
   margin-bottom: var(--steg-4);
   padding: 0;
@@ -933,12 +843,12 @@ p.warnung { color: var(--warn); }
 .grundriss-feld.ablage {
   border-color: var(--warn);
   outline: 2px dashed var(--warn);
-  outline-offset: -2px;
+  outline-offset: -4px;
 }
 
 .grundriss-feld.setzbar {
   cursor: crosshair;
-  border-color: var(--leise);
+  border-color: var(--rand-stark);
 }
 
 .grundriss-feld img {
@@ -946,20 +856,17 @@ p.warnung { color: var(--warn); }
   width: 100%;
 }
 
-.grundriss-feld > .leer { padding: var(--steg-4); }
+.grundriss-feld > .leer { padding: var(--steg-5); margin: 0; }
 
-/* Die Marke sitzt MIT IHRER MITTE auf der Lage — ohne die Verschiebung zeigte
- * ihre linke obere Ecke auf den Punkt, und der Punkt laege daneben.
- *
- * `.plan-marke` und nicht `.marke`: unter dem alten Namen traf diese Regel
- * auch den Gebaeudenamen in der Kopfzeile und machte ihn zu einem absolut
- * positionierten Kaestchen ueber dem Datei-Menue. Siehe den Kopf des
- * Bausteine-Abschnitts. */
+/* Die Marke sitzt MIT IHRER MITTE auf der Lage. */
 .plan-marke {
   position: absolute;
   transform: translate(-50%, -50%);
-  background: var(--bg);
-  border: 1px solid var(--leise);
+  background: var(--erhoben);
+  color: var(--text-stark);
+  border: 1px solid var(--rand-stark);
+  border-radius: var(--r-s);
+  box-shadow: var(--schatten-1);
   padding: 2px var(--steg-2);
   font-size: 0.85em;
   white-space: nowrap;
@@ -967,16 +874,16 @@ p.warnung { color: var(--warn); }
 }
 
 .plan-marke.gewaehlt {
-  border-color: var(--warn);
-  color: var(--warn);
+  border-color: var(--akzent);
+  background: var(--akzent);
+  color: var(--akzent-text);
 }
 
 /* ── Gebaeude-Ansicht (QW12) ─────────────────────────────────────────────
  *
- * Isometrisch in SVG: Etagen uebereinander, Raeume als Koerper, Hausstrecken
- * in Warn-Bernstein (dieselbe Farbe wie die Festverbindungen im Signalplan),
- * Trassen gestrichelt. Ein Raum ohne Lage steht gestrichelt da — er ist
- * eingereiht, nicht vermessen. */
+ * Isometrisch in SVG auf demselben versenkten Grund wie der Grundriss.
+ * Hausstrecken in Warn-Bernstein, Trassen gestrichelt; ein Raum ohne Lage
+ * steht gestrichelt da. */
 .gebaeude-flaeche {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 15rem;
@@ -990,7 +897,8 @@ p.warnung { color: var(--warn); }
 
 .gebaeude-bild {
   border: 1px solid var(--rand);
-  background: var(--flaeche);
+  border-radius: var(--r-l);
+  background: var(--versenkt);
   overflow: auto;
 }
 
@@ -1002,41 +910,38 @@ p.warnung { color: var(--warn); }
   max-height: 72vh;
 }
 
-.raum-deckel { fill: var(--erhoben); fill-opacity: 0.6; stroke: var(--leise); stroke-width: 1; }
-.raum-seite { fill: var(--erhoben); fill-opacity: 0.35; stroke: var(--leise); stroke-width: 1; }
-.raum.angenommen polygon { stroke-dasharray: 4 3; fill-opacity: 0.15; }
-.raum-text { fill: var(--text); font-size: 11px; text-anchor: middle; }
+.raum-deckel { fill: var(--flaeche); fill-opacity: 0.9; stroke: var(--rand-stark); stroke-width: 1; }
+.raum-seite { fill: var(--flaeche-2); fill-opacity: 0.8; stroke: var(--rand-stark); stroke-width: 1; }
+.raum.angenommen polygon { stroke-dasharray: 4 3; fill-opacity: 0.3; }
+.raum-text { fill: var(--text-stark); font-size: 11px; text-anchor: middle; }
 .raum-text-leise { fill: var(--leise); font-size: 10px; }
 
-.verbindung line { stroke-width: 2.5; }
+.verbindung line { stroke-width: 2.5; stroke-linecap: round; }
 .verbindung.strecke line { stroke: var(--warn); }
 .verbindung.trasse line { stroke: var(--leise); stroke-width: 2; stroke-dasharray: 6 4; }
 .verbindung-text {
-  fill: var(--text);
+  fill: var(--text-stark);
   font-size: 10px;
   text-anchor: middle;
   paint-order: stroke;
-  stroke: var(--flaeche);
+  stroke: var(--versenkt);
   stroke-width: 3px;
 }
 
 .gebaeude-liste {
   border: 1px solid var(--rand);
+  border-radius: var(--r-l);
   background: var(--flaeche);
-  padding: var(--steg-3);
+  box-shadow: var(--schatten-1);
+  padding: var(--steg-3) var(--steg-4);
   max-height: 72vh;
   overflow-y: auto;
 }
 
 .gebaeude-liste h3 {
   margin: 0 0 var(--steg-2);
-  padding-bottom: var(--steg-2);
-  border-bottom: 1px solid var(--rand);
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--leise);
+  font-size: 0.95rem;
+  font-weight: 650;
 }
 
 .gebaeude-etage { margin-bottom: var(--steg-2); }
@@ -1048,7 +953,11 @@ p.warnung { color: var(--warn); }
 .gebaeude-ansicht .wahl { align-items: center; padding: 0; }
 .gebaeude-ansicht .wahl.eingerueckt { padding-left: var(--steg-4); }
 
-/* Unter 640 px schiebt das Signet die Menues aus dem Bild (mobil:check in cable-planner). */
+/* Unter 640 px schiebt das Signet die Menues aus dem Bild (mobil:check in
+   cable-planner); der Gebaeudename weicht vor den Menues. */
 @media (max-width: 639px) {
   .kopf-signet { display: none !important; }
+  .kopf { gap: 2px; padding: 0 var(--steg-2); }
+  .kopf-knopf, .menue-knopf { padding: 0 var(--steg-2); }
+  .kopf .marke { max-width: 30vw; }
 }
